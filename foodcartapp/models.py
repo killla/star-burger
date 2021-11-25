@@ -162,6 +162,12 @@ class OrderItem(models.Model):
         on_delete=models.CASCADE,
     )
     quantity = models.PositiveIntegerField()
+    price = models.DecimalField(
+        'цена',
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
 
     class Meta:
         verbose_name = 'элемент заказа'
