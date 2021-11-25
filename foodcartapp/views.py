@@ -3,6 +3,8 @@ import json
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer, ModelSerializer
+from rest_framework.serializers import CharField
 
 from django.http import JsonResponse
 from django.templatetags.static import static
@@ -65,19 +67,11 @@ def product_list_api(request):
 
 @api_view(['POST'])
 def register_order(request):
-    content, response_status = None, None
-    data = request.data
-    if 'products' not in data:
-        content = {'products': 'Обязательное поле'}
-    elif data['products'] == None:
-        content = {'products': 'Это поле не может быть пустым.'}
-    elif not isinstance(data['products'], list):
-        content = {'products': 'Ожидался list со значениями, но был получен "{}".'.format(type(data['products']).__name__)}
-    elif not data['products']:
-        content = {'products': 'Этот список не может быть пустым.'}
 
-    if content:
-        response_status = status.HTTP_406_NOT_ACCEPTABLE
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+
 
     order = Order.objects.create(firstname=data['firstname'],
                                  lastname=data['lastname'],
@@ -89,4 +83,18 @@ def register_order(request):
                                  product=Product.objects.get(id=product['product']),
                                  quantity=product['quantity']
                                  )
-    return Response(content, status=response_status or status.HTTP_200_OK)
+    return Response({'order': order.id})
+
+
+class OrderItemSerializer(ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ['product', 'quantity']
+
+
+class OrderSerializer(ModelSerializer):
+    products = OrderItemSerializer(many=True, allow_empty=False)
+    class Meta:
+        model = Order
+        fields = ['firstname', 'lastname', 'phonenumber', 'address', 'products']
+
