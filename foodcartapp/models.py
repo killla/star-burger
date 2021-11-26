@@ -152,6 +152,14 @@ class Order(models.Model):
     registered_at = models.DateTimeField('Время заказа', default=timezone.now)
     called_at = models.DateTimeField('Время звонка', null=True, blank=True)
     delivered_at = models.DateTimeField('Время доставки', null=True, blank=True)
+    method_of_payment = models.CharField(
+        max_length = 20,
+        choices=[
+            ('cash', 'наличностью'),
+            ('card', 'электронно')
+        ],
+        default='cash',
+    )
 
     class Meta:
         verbose_name = 'заказ'
