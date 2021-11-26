@@ -147,6 +147,7 @@ class Order(models.Model):
         ],
         default='unprocessed',
     )
+    comment = models.TextField(blank=True)
 
     class Meta:
         verbose_name = 'заказ'
