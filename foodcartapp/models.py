@@ -139,6 +139,14 @@ class Order(models.Model):
         'адрес',
         max_length=100,
     )
+    status = models.CharField(
+        max_length = 20,
+        choices=[
+            ('processed', 'обработанный'),
+            ('unprocessed', 'необработанный')
+        ],
+        default='unprocessed',
+    )
 
     class Meta:
         verbose_name = 'заказ'

@@ -98,11 +98,11 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.all().annotate(total=Sum(
+    orders = Order.objects.filter(status='unprocessed').annotate(total=Sum(
         F('order_items__price') *
         F('order_items__quantity'),
         output_field=models.DecimalField()))
 
-    return render(request, template_name='order_items.html', context={'orders': orders
-        # TODO заглушка для нереализованного функционала
+    return render(request, template_name='order_items.html', context={
+            'orders': orders,
     })
